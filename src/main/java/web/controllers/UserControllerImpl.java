@@ -4,15 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
 import web.models.User;
 import web.services.UserService;
-
-import javax.validation.Valid;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/users")
+
 public class UserControllerImpl implements UserController {
 
     private final UserService userService;
@@ -23,28 +20,24 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    @GetMapping()
     public String showAll(Model model) {
         model.addAttribute("users", userService.getAll());
         return "showUsers";
     }
 
     @Override
-    @GetMapping(params = "id")
-    public String show(Model model, @RequestParam(name = "id") int id) {
+    public String show(Model model, int id) {
         model.addAttribute("user", userService.get(id));
         return "showUser";
     }
 
     @Override
-    @GetMapping("/create")
-    public String createUserForm(@ModelAttribute("user") User user) {
+    public String createUserForm(User user) {
         return "createUser";
     }
 
     @Override
-    @PostMapping()
-    public String create(@ModelAttribute("user") @Valid User user,
+    public String create(User user,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "createUser";
@@ -55,8 +48,7 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    @GetMapping("/update")
-    public String updateForm(@RequestParam(name = "id") int id, Model model) {
+    public String updateForm(int id, Model model) {
         Optional<User> user = userService.get(id);
         if (user.isPresent()) {
             model.addAttribute("user", user.get());
@@ -67,8 +59,7 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    @PostMapping("/update")
-    public String update(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+    public String update(User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "updateUser";
         }
@@ -77,8 +68,7 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    @PostMapping("/delete")
-    public String delete(@RequestParam(name = "id") int id) {
+    public String delete(int id) {
         userService.delete(id);
         return "redirect:/users/";
     }
